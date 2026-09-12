@@ -19,13 +19,31 @@ export default function CyberGlobeScene({
       camera={{ position: [0, 0, 600], fov: 75, near: 0.1, far: 2000 }}
       dpr={[1, 1.5]}
       gl={{
-        antialias: false,
+        antialias: true,
         alpha: false,
         powerPreference: "high-performance",
       }}
-      scene={{ background: new THREE.Color("#050a05") }}
+      scene={{
+        background: new THREE.Color(
+          isTerminalMode ? "#020402" : "#050a08",
+        ),
+      }}
+      onCreated={({ gl }) => {
+        gl.outputColorSpace = THREE.SRGBColorSpace;
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.15;
+        gl.domElement.setAttribute("role", "img");
+        gl.domElement.setAttribute(
+          "aria-label",
+          "Interactive ambient particle field — move your pointer to connect nodes",
+        );
+      }}
     >
-      <fogExp2 attach="fog" color="#050a05" density={0.0008} />
+      <fogExp2
+        attach="fog"
+        color={isTerminalMode ? "#020402" : "#050a08"}
+        density={0.00055}
+      />
 
       <TraceParticles
         isTerminalMode={isTerminalMode}
@@ -36,9 +54,9 @@ export default function CyberGlobeScene({
       {!prefersReducedMotion && (
         <EffectComposer multisampling={0}>
           <Bloom
-            luminanceThreshold={0.55}
-            luminanceSmoothing={0.7}
-            intensity={0.45}
+            luminanceThreshold={0.45}
+            luminanceSmoothing={0.65}
+            intensity={isTerminalMode ? 0.55 : 0.58}
             mipmapBlur
           />
         </EffectComposer>

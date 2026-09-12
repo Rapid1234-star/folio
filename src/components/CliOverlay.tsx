@@ -70,7 +70,9 @@ export default function CliOverlay() {
          setIsOpen(false);
          break;
        case 'contact':
-         setHistory(prev => [...prev, { type: 'out', text: 'Email: aayanirshad99@gmail.com | Tel: +971 56-123-5034 | GitHub: Rapid1234-star' }]);
+         setHistory(prev => [...prev, { type: 'out', text: '> Opening secure channel...' }]);
+         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+         setIsOpen(false);
          break;
        default:
          if (trimmed) {

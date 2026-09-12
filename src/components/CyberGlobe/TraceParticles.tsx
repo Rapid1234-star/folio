@@ -9,7 +9,7 @@ const NOISE = 400;
 const FRICTION = 0.93;
 
 // Interaction radius — kept strictly small
-const CONNECTION_RADIUS = 75;
+const CONNECTION_RADIUS = 110;
 
 // MASSIVE buffer limit.
 // The flicker was caused because the center of your particle cloud is very dense.
@@ -59,10 +59,11 @@ export default function TraceParticles({
         phases[i] = Math.random() * Math.PI * 2;
 
         const cr = Math.random();
-        if      (cr < 0.7)  { colors[i*3]=0;    colors[i*3+1]=0.30; colors[i*3+2]=0.06; }
-        else if (cr < 0.9)  { colors[i*3]=0;    colors[i*3+1]=0.55; colors[i*3+2]=0.12; }
-        else if (cr < 0.98) { colors[i*3]=0;    colors[i*3+1]=0.50; colors[i*3+2]=0.60; }
-        else                { colors[i*3]=0.35; colors[i*3+1]=0.65; colors[i*3+2]=0.45; }
+        // Bright matrix green + cyan for visibility through UI
+        if      (cr < 0.5)  { colors[i*3]=0.05; colors[i*3+1]=0.95; colors[i*3+2]=0.45; }
+        else if (cr < 0.75) { colors[i*3]=0.15; colors[i*3+1]=1.0;  colors[i*3+2]=0.55; }
+        else if (cr < 0.92) { colors[i*3]=0.2;  colors[i*3+1]=0.9;  colors[i*3+2]=1.0; }
+        else                { colors[i*3]=0.55; colors[i*3+1]=1.0;  colors[i*3+2]=0.85; }
       }
       return { fieldPositions:fPos, originalPositions:oPos, velocityArray:vPos, phaseArray:phases, baseColorArray:colors };
     }, [PARTICLE_COUNT]);
@@ -76,14 +77,14 @@ export default function TraceParticles({
 
   const material = useMemo(() =>
     new THREE.PointsMaterial({
-      size: isMobile ? 1.2 : 1.5,
+      size: isMobile ? 1.8 : 2.4,
       transparent: true,
-      opacity: 0.22,
+      opacity: isTerminalMode ? 0.28 : 0.48,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,
       vertexColors: true,
-    }), [isMobile]);
+    }), [isMobile, isTerminalMode]);
 
   const linesGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
@@ -139,6 +140,21 @@ export default function TraceParticles({
       const ox = originalPositions[idx], oy = originalPositions[idx+1], oz = originalPositions[idx+2];
       const cx = pos[idx],              cy = pos[idx+1],              cz = pos[idx+2];
       let vx = velocityArray[idx], vy = velocityArray[idx+1], vz = velocityArray[idx+2];
+
+      // Gentle mouse attract — visible interaction without jitter
+      if (pointerOn && canAnimate) {
+        const dx = smoothMouse.x - cx;
+        const dy = smoothMouse.y - cy;
+        const dz = smoothMouse.z - cz;
+        const distSq = dx * dx + dy * dy + dz * dz;
+        if (distSq < 180 * 180 && distSq > 0.01) {
+          const dist = Math.sqrt(distSq);
+          const force = (1 - dist / 180) * 0.045;
+          vx += (dx / dist) * force * dt;
+          vy += (dy / dist) * force * dt;
+          vz += (dz / dist) * force * 0.35 * dt;
+        }
+      }
 
       // Ambient natural drift
       const drift = canAnimate ? Math.sin(state.clock.elapsedTime * 0.5 + phaseArray[i]) * 0.004 : 0;

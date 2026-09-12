@@ -3,14 +3,18 @@ import SectionHeader from "../SectionHeader";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Education() {
   const sectionRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
 
   useGSAP(
     () => {
+      if (reduced) return;
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -19,30 +23,30 @@ export default function Education() {
       });
 
       tl.from(".edu-box", {
-        y: 50,
+        y: 16,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: "power3.out",
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.out",
       }).from(
         ".edu-cert",
         {
-          x: -20,
+          y: 8,
           opacity: 0,
-          duration: 0.5,
-          stagger: 0.15,
+          duration: 0.35,
+          stagger: 0.08,
           ease: "power2.out",
         },
-        "-=0.4",
+        "-=0.2",
       );
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [reduced] },
   );
 
   return (
     <section
       ref={sectionRef}
-      className="relative w-full py-16 md:py-20 px-6 md:px-12 flex flex-col justify-center"
+      className="relative w-full py-16 md:py-24 px-6 md:px-12 flex flex-col justify-center"
       id="education"
     >
       <SectionHeader
@@ -52,59 +56,52 @@ export default function Education() {
       />
       <div className="w-full max-w-5xl font-mono relative mx-auto">
         <div className="flex flex-col lg:flex-row gap-5 items-stretch mt-4 relative z-10 mb-8">
-          <div className="edu-box flex-1 cyber-border border border-green-900/50 bg-[var(--card-bg)] p-6 md:p-10 pt-12 relative shadow-[inset_0_0_50px_rgba(0,255,65,0.05)]">
-            <div className="absolute top-0 right-0 bg-green-500/20 text-green-400 border-b border-l border-green-500/40 px-3 py-1 text-[10px] md:text-xs tracking-widest">
+          <div className="edu-box flex-1 cyber-border glass-panel p-6 md:p-10 pt-12 relative">
+            <div className="absolute top-0 right-0 bg-[var(--accent)]/20 text-[var(--accent)] border-b border-l border-[var(--accent)]/40 px-3 py-1 text-[10px] md:text-xs tracking-widest">
               STATUS: IN_PROGRESS
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
               &gt; University of Wollongong in Dubai
             </h3>
-            <div className="text-green-400 text-sm mb-4">
+            <div className="text-[var(--accent)] text-sm mb-4">
               Bachelor of Computer Science, Specializing in Cybersecurity
             </div>
-            <div className="text-slate-400 text-xs md:text-sm bg-slate-900 border border-slate-700 px-3 py-1 inline-block">
+            <div className="text-slate-400 text-xs md:text-sm bg-black/50 border border-slate-700 px-3 py-1 inline-block">
               [ APR 2025 - APR 2028 ] | Dubai, UAE
             </div>
           </div>
 
-          <div className="edu-box flex-1 cyber-border border border-green-900/50 bg-[var(--card-bg)] p-6 md:p-10 relative">
-            <h3 className="text-green-400 mb-6 border-b border-green-900/50 pb-2 text-sm md:text-base">
+          <div className="edu-box flex-1 cyber-border glass-panel p-6 md:p-10 relative">
+            <h3 className="text-[var(--accent)] mb-6 border-b border-[var(--border-soft)] pb-2 text-sm md:text-base">
               # PROFESSIONAL_CERTIFICATIONS
             </h3>
             <ul className="space-y-4 text-slate-300 text-sm md:text-base">
-              <li className="edu-cert flex items-center gap-3">
-                <span className="text-green-500">[*]</span>
-                <a
-                  href="https://www.coursera.org/account/accomplishments/professional-cert/BC7C1BZCZ780"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
-                >
-                  Google Cybersecurity Professional Certificate
-                </a>
-              </li>
-              <li className="edu-cert flex items-center gap-3">
-                <span className="text-green-500">[*]</span>
-                <a
-                  href="https://www.coursera.org/account/accomplishments/professional-cert/L9U93KKVJ6D4"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
-                >
-                  Meta Front-End Developer Professional Certificate
-                </a>
-              </li>
-              <li className="edu-cert flex items-center gap-3">
-                <span className="text-green-500">[*]</span>
-                <a
-                  href="https://www.coursera.org/account/accomplishments/professional-cert/T20FSGC6EJ4T"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
-                >
-                  Microsoft Python Development Professional Certificate
-                </a>
-              </li>
+              {[
+                {
+                  href: "https://www.coursera.org/account/accomplishments/professional-cert/BC7C1BZCZ780",
+                  label: "Google Cybersecurity Professional Certificate",
+                },
+                {
+                  href: "https://www.coursera.org/account/accomplishments/professional-cert/L9U93KKVJ6D4",
+                  label: "Meta Front-End Developer Professional Certificate",
+                },
+                {
+                  href: "https://www.coursera.org/account/accomplishments/professional-cert/T20FSGC6EJ4T",
+                  label: "Microsoft Python Development Professional Certificate",
+                },
+              ].map((c) => (
+                <li key={c.href} className="edu-cert flex items-center gap-3">
+                  <span className="text-[var(--accent)] shrink-0">[*]</span>
+                  <a
+                    href={c.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center min-h-11 py-2 hover:text-[var(--accent)] transition-colors underline decoration-[var(--border-soft)] hover:decoration-[var(--accent)]/50"
+                  >
+                    {c.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

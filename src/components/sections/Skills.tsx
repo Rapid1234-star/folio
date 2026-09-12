@@ -107,12 +107,12 @@ export default function Skills() {
         subtitle="Core technologies & frameworks"
       />
       <div className="w-full max-w-5xl font-mono relative mx-auto">
-        <div className="cyber-border bg-[var(--card-bg)] p-6 md:p-10 pt-12 mt-4 relative z-10 shadow-[0_0_20px_rgba(0,255,65,0.05)]">
+        <div className="cyber-border glass-panel p-6 md:p-10 pt-10 mt-4 relative z-10">
           <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
             {skills.map((skill, idx) => (
               <div
                 key={idx}
-                className="skills-logo-card flex items-center gap-3 p-3 md:p-4 border border-green-900/30 bg-black/30 hover:border-green-500/50 hover:bg-[rgba(0,255,65,0.04)] transition-all duration-300 cursor-default group"
+                className="skills-logo-card flex items-center gap-3 p-3 md:p-4 border border-[var(--border-soft)] bg-black/40 hover:border-[var(--accent)]/50 hover:bg-[var(--accent)]/5 hover:-translate-y-0.5 transition-all duration-200 cursor-default group"
               >
                 {skill.icon ? (
                   <i

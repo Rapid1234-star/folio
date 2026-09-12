@@ -1,95 +1,137 @@
-import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
-import { playHoverSound, playClickSound } from '../utils/sfx';
+import React, { useEffect, useRef } from "react";
+import { X } from "lucide-react";
+import { playHoverSound, playClickSound } from "../utils/sfx";
 
 const navItems = [
-  { id: 'summary', label: 'ABOUT' },
-  { id: 'experience', label: 'EXP' },
-  { id: 'projects', label: 'WORK' },
-  { id: 'skills', label: 'SKILLS' },
-  { id: 'education', label: 'EDU' },
+  { id: "summary", label: "ABOUT" },
+  { id: "experience", label: "EXP" },
+  { id: "projects", label: "WORK" },
+  { id: "skills", label: "SKILLS" },
+  { id: "education", label: "EDU" },
+  { id: "contact", label: "LINK" },
 ];
 
 interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (targetId: string) => void;
+  isMuted: boolean;
+  toggleMute: () => void;
 }
 
-export default function MobileNav({ isOpen, onClose, onNavigate }: MobileNavProps) {
-  const menuRef = useRef<HTMLDivElement>(null);
+export default function MobileNav({
+  isOpen,
+  onClose,
+  onNavigate,
+  isMuted,
+  toggleMute,
+}: MobileNavProps) {
   const firstItemRef = useRef<HTMLButtonElement>(null);
 
-  // Focus trap
   useEffect(() => {
     if (isOpen) {
       firstItemRef.current?.focus();
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div
-      ref={menuRef}
       className="fixed inset-0 z-[90] md:hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Navigation menu"
     >
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Menu panel */}
-      <div className="absolute top-0 right-0 h-full w-72 bg-[#0a0f0a] border-l border-green-900/50 flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-green-900/50">
-          <span className="text-green-500 text-xs font-bold tracking-widest">NAV_MENU</span>
+      <div className="absolute top-0 right-0 h-full w-72 max-w-[85vw] bg-[#0a120e] border-l border-[var(--border-soft)] flex flex-col pb-[var(--safe-bottom)]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--border-soft)]">
+          <span className="text-[var(--accent)] text-xs font-bold tracking-widest">
+            NAV_MENU
+          </span>
           <button
             onClick={onClose}
-            className="text-green-500 hover:text-white transition-colors min-h-11 min-w-11 flex items-center justify-center"
+            className="text-[var(--accent)] hover:text-white transition-colors min-h-11 min-w-11 flex items-center justify-center"
             aria-label="Close menu"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex-1 flex flex-col py-4" role="navigation" aria-label="Mobile navigation">
+        <nav
+          className="flex-1 flex flex-col py-4 overflow-y-auto"
+          role="navigation"
+          aria-label="Mobile navigation"
+        >
           {navItems.map((item, idx) => (
             <button
               key={item.id}
               ref={idx === 0 ? firstItemRef : undefined}
-              onClick={() => { playClickSound(); onNavigate(item.id); onClose(); }}
+              onClick={() => {
+                playClickSound();
+                onNavigate(item.id);
+                onClose();
+              }}
               onMouseEnter={playHoverSound}
-              className="px-6 py-4 text-left text-sm font-bold tracking-widest text-green-500/70 hover:text-white hover:bg-green-900/20 transition-all min-h-11 flex items-center gap-3"
+              className="px-6 py-4 text-left text-sm font-bold tracking-widest text-[var(--accent)]/75 hover:text-white hover:bg-[var(--accent)]/10 transition-all min-h-11 flex items-center gap-3"
             >
-              <span className="text-green-900 text-xs">0{idx + 1}_</span>
+              <span className="text-[var(--accent)]/30 text-xs">0{idx + 1}_</span>
               [ {item.label} ]
             </button>
           ))}
         </nav>
 
-        {/* Footer */}
-        <div className="px-4 py-3 border-t border-green-900/50 text-[10px] text-green-900 tracking-widest">
-          TRACE_OS v2.4.1
+        {/* System actions — live here on mobile so bottom chrome stays ModeToggle-only */}
+        <div className="px-4 py-4 border-t border-[var(--border-soft)] flex flex-col gap-2">
+          <p className="text-[9px] text-[var(--accent)]/40 tracking-[0.2em] uppercase mb-1">
+            System
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              playClickSound();
+              onNavigate("hero");
+              onClose();
+            }}
+            onMouseEnter={playHoverSound}
+            aria-label="Reboot System"
+            className="w-full min-h-11 border border-[var(--accent)] text-[var(--accent)] text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--accent)] hover:text-black transition-colors"
+          >
+            [ REBOOT_SYS ]
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleMute();
+            }}
+            onMouseEnter={playHoverSound}
+            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+            className="w-full min-h-11 border border-[var(--border-soft)] text-[var(--accent)]/80 text-[10px] font-bold uppercase tracking-widest hover:border-[var(--accent)] hover:text-white transition-colors"
+          >
+            {isMuted ? "[ AUDIO: MUTED ]" : "[ AUDIO: ON ]"}
+          </button>
+          <p className="text-[10px] text-[var(--accent)]/35 tracking-widest pt-2">
+            TRACE_OS v2.5
+          </p>
         </div>
       </div>
     </div>
