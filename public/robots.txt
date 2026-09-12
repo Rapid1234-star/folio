@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aayan-d.vercel.app/sitemap.xml
