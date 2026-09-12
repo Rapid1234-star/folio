@@ -56,9 +56,9 @@ export default function Education() {
             <div className="absolute top-0 right-0 bg-green-500/20 text-green-400 border-b border-l border-green-500/40 px-3 py-1 text-[10px] md:text-xs tracking-widest">
               STATUS: IN_PROGRESS
             </div>
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
               &gt; University of Wollongong in Dubai
-            </h2>
+            </h3>
             <div className="text-green-400 text-sm mb-4">
               Bachelor of Computer Science, Specializing in Cybersecurity
             </div>
@@ -68,21 +68,42 @@ export default function Education() {
           </div>
 
           <div className="edu-box flex-1 cyber-border border border-green-900/50 bg-[var(--card-bg)] p-6 md:p-10 relative">
-            <h2 className="text-green-400 mb-6 border-b border-green-900/50 pb-2 text-sm md:text-base">
+            <h3 className="text-green-400 mb-6 border-b border-green-900/50 pb-2 text-sm md:text-base">
               # PROFESSIONAL_CERTIFICATIONS
-            </h2>
+            </h3>
             <ul className="space-y-4 text-slate-300 text-sm md:text-base">
               <li className="edu-cert flex items-center gap-3">
                 <span className="text-green-500">[*]</span>
-                Google Cybersecurity Professional Certificate
+                <a
+                  href="https://www.coursera.org/account/accomplishments/professional-cert/BC7C1BZCZ780"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
+                >
+                  Google Cybersecurity Professional Certificate
+                </a>
               </li>
               <li className="edu-cert flex items-center gap-3">
                 <span className="text-green-500">[*]</span>
-                Meta Front-End Developer Professional Certificate
+                <a
+                  href="https://www.coursera.org/account/accomplishments/professional-cert/L9U93KKVJ6D4"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
+                >
+                  Meta Front-End Developer Professional Certificate
+                </a>
               </li>
               <li className="edu-cert flex items-center gap-3">
                 <span className="text-green-500">[*]</span>
-                Microsoft Python Development Professional Certificate
+                <a
+                  href="https://www.coursera.org/account/accomplishments/professional-cert/T20FSGC6EJ4T"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-green-400 transition-colors underline decoration-green-900/50 hover:decoration-green-500/50"
+                >
+                  Microsoft Python Development Professional Certificate
+                </a>
               </li>
             </ul>
           </div>

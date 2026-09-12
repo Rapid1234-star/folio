@@ -108,7 +108,7 @@ export default function Skills() {
       />
       <div className="w-full max-w-5xl font-mono relative mx-auto">
         <div className="cyber-border bg-[var(--card-bg)] p-6 md:p-10 pt-12 mt-4 relative z-10 shadow-[0_0_20px_rgba(0,255,65,0.05)]">
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
             {skills.map((skill, idx) => (
               <div
                 key={idx}

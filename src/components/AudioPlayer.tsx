@@ -37,7 +37,7 @@ export default function AudioPlayer({ isMuted, toggleMute }: AudioPlayerProps) {
       aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
     >
       {/* Play/Pause Button */}
-      <div className={`w-8 h-8 flex items-center justify-center rounded-sm border transition-all ${isMuted ? 'border-green-900/50 text-green-700' : 'border-green-500 text-green-500 shadow-[0_0_8px_rgba(0,255,65,0.4)]'}`}>
+      <div className={`w-11 h-11 flex items-center justify-center rounded-sm border transition-all ${isMuted ? 'border-green-900/50 text-green-700' : 'border-green-500 text-green-500 shadow-[0_0_8px_rgba(0,255,65,0.4)]'}`}>
         {isMuted ? (
           // Play Icon
           <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">

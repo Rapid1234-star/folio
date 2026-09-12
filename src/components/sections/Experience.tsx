@@ -93,9 +93,9 @@ export default function Experience() {
             {/* Left Column */}
             <div className="flex-[2] flex flex-col">
               <div className="exp-header mb-6 pb-6 border-b border-green-500/30">
-                <h2 className="text-xl md:text-3xl font-bold text-white mb-2">
+                <h3 className="text-xl md:text-3xl font-bold text-white mb-2">
                   &gt; QA & Automation Intern
-                </h2>
+                </h3>
                 <div className="text-green-400 text-sm md:text-base">
                   @ Patchifi <span className="text-slate-600 px-2">|</span>{" "}
                   Remote <span className="text-slate-600 px-2">|</span>{" "}

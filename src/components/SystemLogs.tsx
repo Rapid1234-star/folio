@@ -77,7 +77,7 @@ export default function SystemLogs({ isTerminalMode }: { isTerminalMode: boolean
       </button>
 
       <div className={`fixed right-0 top-0 bottom-0 w-64 xl:w-80 border-l border-green-900/50 bg-black/90 backdrop-blur-md z-40 flex flex-col text-xs font-mono p-4 pointer-events-auto transition-transform duration-500 ${isTerminalMode ? (isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0') : 'translate-x-full'} ${isTerminalMode ? 'opacity-100' : 'opacity-30'}`}>
-        <div className="text-green-500 border-b border-green-900/50 pb-2 mb-2 font-bold tracking-widest flex justify-between items-center">
+        <div className="text-green-500 border-b border-green-900/50 pb-2 mb-2 font-bold tracking-widest flex justify-between items-center shrink-0">
           <span>SYS_TRACE_LOG</span>
           <span className="w-2 h-2 bg-green-500 animate-pulse"></span>
         </div>

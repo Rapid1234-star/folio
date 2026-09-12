@@ -10,10 +10,11 @@ const sections = [
   { id: 'education', label: '05_EDUCATION' },
 ];
 
-export default function NavigationDots() {
+export default function NavigationDots({ isTerminalMode }: { isTerminalMode: boolean }) {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
+    if (isTerminalMode) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -31,7 +32,9 @@ export default function NavigationDots() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [isTerminalMode]);
+
+  if (isTerminalMode) return null;
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);

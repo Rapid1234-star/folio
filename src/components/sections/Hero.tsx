@@ -141,7 +141,7 @@ export default function Hero() {
   }, [roleText, isDeletingRole, roleIndex, bootState]);
 
   return (
-    <section ref={heroRef} className="relative w-full h-screen flex flex-col justify-center px-6 md:px-24 font-mono" id="hero">
+    <section ref={heroRef} className="relative w-full h-screen flex flex-col justify-center px-6 md:px-24 font-mono pt-20 md:pt-0" id="hero">
       
       <div ref={terminalRef} className="max-w-5xl z-10 relative" style={{ border: '1px solid rgba(0,255,65,0.15)', boxShadow: '0 0 60px rgba(0,255,65,0.06), 0 40px 80px rgba(0,0,0,0.7)' }}>
         {/* Terminal title bar — macOS/Linux style chrome */}
@@ -186,7 +186,7 @@ export default function Hero() {
           
           {bootState === 'ready' && (
             <div className="transition-opacity duration-1000 opacity-100">
-              <div className="flex items-center text-lg md:text-2xl text-green-400 mb-10 h-10">
+              <div className="flex items-center text-lg md:text-2xl text-green-400 mb-10 h-10 overflow-hidden">
                 <span>~/profile $ <span className="text-slate-400 text-base">role:</span> <span className="text-white font-medium bg-green-900/40 px-2 border-b-2 border-green-500">{roleText}</span><span className="w-3 md:w-4 h-6 md:h-8 bg-green-400 ml-1 inline-block align-middle animate-pulse shadow-[0_0_8px_#00ff41]"></span></span>
               </div>
 
@@ -195,16 +195,16 @@ export default function Hero() {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_5px_#00ff41]"></span>
                   LOC: AL NAHDA, SHARJAH
                 </span>
-                <a href="tel:+971561235034" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors">
+                <a href="tel:+971561235034" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors min-h-11 flex items-center">
                   TEL: +971-56-123-5034
                 </a>
-                <a href="mailto:aayanirshad99@gmail.com" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors">
+                <a href="mailto:aayanirshad99@gmail.com" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors min-h-11 flex items-center">
                   EMAIL: aayanirshad99@gmail.com
                 </a>
-                <a href="https://github.com/Rapid1234-star" target="_blank" rel="noreferrer" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors">
+                <a href="https://github.com/Rapid1234-star" target="_blank" rel="noreferrer" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors min-h-11 flex items-center">
                   GITHUB: Rapid1234-star
                 </a>
-                <a href="https://linkedin.com/in/aayan-desai" target="_blank" rel="noreferrer" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors">
+                <a href="https://linkedin.com/in/aayan-desai" target="_blank" rel="noreferrer" className="border border-green-900/50 px-3 py-1.5 bg-black hover:border-green-500 hover:text-green-400 transition-colors min-h-11 flex items-center">
                   LINKEDIN: aayan-desai
                 </a>
               </div>
@@ -231,7 +231,7 @@ export default function Hero() {
 
       {/* Scroll hint - fades out on scroll */}
       <div 
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs tracking-widest animate-bounce z-10 transition-opacity duration-500 ${showScrollHint ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs tracking-widest animate-bounce z-10 transition-opacity duration-500 ${showScrollHint ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         aria-hidden="true"
       >
         <span>[ SCROLL TO EXPLORE ]</span>

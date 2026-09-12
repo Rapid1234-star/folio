@@ -311,7 +311,7 @@ section[id] {
 
   .dock-track {
     justify-content: flex-start;
-    min-width: 680px;
+    min-width: min(680px, 100vw);
   }
 
   .dock-bar {
@@ -329,6 +329,18 @@ a:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid #00ff41;
   outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .crt-overlay::after,
+  .scanlines,
+  .animate-marquee,
+  .animate-bounce,
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
+  }
 }
 
 /* Skip Link */

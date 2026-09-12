@@ -89,10 +89,15 @@ export default function Projects() {
   useEffect(() => {
     if (activeIndex >= 0) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
   }, [activeIndex]);
 
   // Close on Escape key
@@ -205,7 +210,7 @@ export default function Projects() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {truncName(p.title, 16)}
+                    {truncName(p.title, 24)}
                   </span>
                   {/* Spotlight glow */}
                   <div

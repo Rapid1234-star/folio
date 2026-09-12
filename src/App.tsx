@@ -24,6 +24,7 @@ import NavigationDots from "./components/NavigationDots";
 import { scrollState } from "./utils/scrollState";
 import { initMusic, toggleMusic, getIsMusicMuted } from "./utils/music";
 import AudioPlayer from "./components/AudioPlayer";
+import MobileNav from "./components/MobileNav";
 import { initSFX, playHoverSound, playClickSound } from "./utils/sfx";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import LoadingScreen from "./components/LoadingScreen";
@@ -56,6 +57,7 @@ export default function App() {
   const [isGlitching, setIsGlitching] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(getIsMusicMuted());
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const isMobile = useDebouncedMobile();
 
   useEffect(() => {
@@ -161,6 +163,12 @@ export default function App() {
 
       {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
 
+      <MobileNav
+        isOpen={isMobileNavOpen}
+        onClose={() => setIsMobileNavOpen(false)}
+        onNavigate={handleNavClick}
+      />
+
       {/* Top Terminal Status Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1.5 bg-black z-[100] border-b border-green-900 flex items-center">
         <div
@@ -170,7 +178,7 @@ export default function App() {
       </div>
 
       {/* Persistent Static HUD Elements - xl only to avoid mid-width overlap */}
-      <div className="fixed top-4 right-6 z-[60] text-xs font-bold text-green-500/60 pointer-events-none hidden xl:block">
+      <div className="fixed top-16 right-6 z-[60] text-xs font-bold text-green-500/80 pointer-events-none hidden xl:block">
         <div className="flex flex-col items-end pointer-events-auto">
           <Tooltip text="SYS_STATE: NOMINAL">
             <span className="flex items-center gap-2 mb-1">
@@ -197,7 +205,7 @@ export default function App() {
           onClick={() => handleNavClick("hero")}
           onMouseEnter={playHoverSound}
           aria-label="Back to top"
-          className="text-lg md:text-2xl font-bold tracking-tighter border border-green-900/50 bg-black/80 px-3 py-1 pointer-events-auto hover:text-white hover:border-green-500 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] whitespace-nowrap"
+          className="text-lg md:text-2xl font-bold tracking-tighter border border-green-900/50 bg-black/80 px-3 py-1 pointer-events-auto hover:text-white hover:border-green-500 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] whitespace-nowrap min-h-11 flex items-center"
         >
           TRACE_0 // A.D_
         </button>
@@ -248,9 +256,21 @@ export default function App() {
             [ EDU ]
           </button>
         </nav>
+
+        {/* Hamburger button — visible below md */}
+        <button
+          onClick={() => setIsMobileNavOpen(true)}
+          onMouseEnter={playHoverSound}
+          aria-label="Open navigation menu"
+          className="md:hidden pointer-events-auto border border-green-900/50 bg-black/80 px-3 py-2 text-green-500 hover:border-green-500 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] min-h-11 min-w-11 flex flex-col items-center justify-center gap-1"
+        >
+          <span className="w-4 h-px bg-green-500"></span>
+          <span className="w-4 h-px bg-green-500"></span>
+          <span className="w-4 h-px bg-green-500"></span>
+        </button>
       </header>
 
-      <div className="fixed bottom-4 left-6 z-[60] text-[10px] text-green-500/40 pointer-events-none hidden md:block border-l border-green-500/40 pl-2">
+      <div className="fixed bottom-4 left-6 z-[60] text-[10px] text-green-500/60 pointer-events-none hidden lg:block border-l border-green-500/40 pl-2">
         <div className="pointer-events-auto">
           <Tooltip text="TARGET_USER_PROFILE">
             <p className="mb-1">AAYAN_DESAI // PORTFOLIO</p>
@@ -264,11 +284,11 @@ export default function App() {
         </div>
       </div>
 
-      {/* Reboot Sys Button */}
+      {/* Reboot Sys Button — hidden on mobile, handled by mobile bottom bar */}
       <button
         onClick={() => handleNavClick("hero")}
         aria-label="Reboot System"
-        className="fixed bottom-6 left-6 z-[60] bg-black border border-green-500 text-green-500/70 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors shadow-[0_0_15px_rgba(0,255,65,0.1)] block md:hidden"
+        className="fixed bottom-6 left-6 z-[60] bg-black border border-green-500 text-green-500/70 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors shadow-[0_0_15px_rgba(0,255,65,0.1)] hidden md:block"
       >
         [ REBOOT_SYS ]
       </button>
@@ -291,18 +311,39 @@ export default function App() {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMwZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-30"></div>
         </div>
       )}
-      <div className="pointer-events-none fixed inset-0 z-50 crt-overlay"></div>
-      <div className="pointer-events-none fixed inset-0 z-40 scanlines opacity-30"></div>
+      <div className="pointer-events-none fixed inset-0 z-50 crt-overlay hidden md:block"></div>
+      <div className="pointer-events-none fixed inset-0 z-40 scanlines opacity-30 hidden md:block"></div>
 
       <CliOverlay />
 
-      {/* View Toggle + Audio Player (bottom-right) */}
-      <div className="fixed bottom-6 right-6 z-[60] flex items-center gap-2">
+      {/* Mobile Bottom Bar — full-width on small screens */}
+      <div className="fixed bottom-0 left-0 right-0 z-[60] md:hidden bg-black/90 border-t border-green-900/50 backdrop-blur-sm px-4 py-2 flex items-center justify-between gap-2">
+        <button
+          onClick={() => handleNavClick("hero")}
+          aria-label="Reboot System"
+          className="bg-black border border-green-500 text-green-500/70 px-3 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors shrink-0"
+        >
+          [ REBOOT ]
+        </button>
+        <div className="flex items-center gap-2 min-w-0">
+          <AudioPlayer isMuted={isAudioMuted} toggleMute={toggleMute} />
+          <button
+            onClick={() => setIsTerminalMode(!isTerminalMode)}
+            aria-label="Switch view mode"
+            className={`border ${isTerminalMode ? "border-green-500 text-green-400" : "border-green-900/50 text-green-600"} bg-black/80 hover:bg-green-900/30 hover:border-green-500/50 px-3 py-2 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] flex items-center gap-2 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest shrink-0 min-w-[104px] justify-center`}
+          >
+            {isTerminalMode ? "[ VISUAL ]" : "[ TERMINAL ]"}
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Bottom-Right Controls — hidden on mobile */}
+      <div className="fixed bottom-6 right-6 z-[60] hidden md:flex items-center gap-2">
         <AudioPlayer isMuted={isAudioMuted} toggleMute={toggleMute} />
         <button
           onClick={() => setIsTerminalMode(!isTerminalMode)}
           aria-label="Switch view mode"
-          className={`border ${isTerminalMode ? "border-green-500 text-green-400" : "border-green-900/50 text-green-600"} bg-black/80 hover:bg-green-900/30 hover:border-green-500/50 px-3 py-2 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] flex items-center gap-2 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest`}
+          className={`border ${isTerminalMode ? "border-green-500 text-green-400" : "border-green-900/50 text-green-600"} bg-black/80 hover:bg-green-900/30 hover:border-green-500/50 px-3 py-2 transition-all shadow-[0_0_10px_rgba(0,255,65,0.1)] flex items-center gap-2 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest min-h-11 min-w-[104px] justify-center`}
         >
           {isTerminalMode ? "[ VISUAL ]" : "[ TERMINAL ]"}
         </button>
@@ -317,7 +358,7 @@ export default function App() {
       <SystemLogs isTerminalMode={isTerminalMode} />
 
       {/* Right Side Navigation Dots */}
-      <NavigationDots />
+      <NavigationDots isTerminalMode={isTerminalMode} />
 
       {/* Main Content — Part 1: Hero, Summary */}
       <main
