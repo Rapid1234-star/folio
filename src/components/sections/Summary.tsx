@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import SectionHeader from "../SectionHeader";
+import InteractiveGlobe from "../InteractiveGlobe";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -35,6 +36,16 @@ export default function Summary() {
             opacity: 0,
             duration: 0.45,
             stagger: 0.12,
+            ease: "power2.out",
+          },
+          "-=0.35",
+        )
+        .from(
+          ".summary-globe",
+          {
+            scale: 0.92,
+            opacity: 0,
+            duration: 0.55,
             ease: "power2.out",
           },
           "-=0.35",
@@ -88,8 +99,8 @@ export default function Summary() {
         <div className="absolute top-0 right-0 w-32 h-1 bg-[var(--accent)]/25" />
         <div className="absolute top-0 right-0 w-1 h-32 bg-[var(--accent)]/25" />
 
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 mt-6 relative z-10">
-          <div className="summary-text flex-[2] space-y-6 text-[var(--text-main)] text-sm md:text-base leading-relaxed">
+        <div className="flex flex-col lg:flex-row items-center lg:items-center gap-6 lg:gap-8 xl:gap-10 mt-6 relative z-10">
+          <div className="summary-text flex-1 min-w-0 space-y-6 text-[var(--text-main)] text-sm md:text-base leading-relaxed w-full">
             <p>
               <span className="text-white font-bold">
                 &gt; Analyzing candidate profile...
@@ -107,7 +118,7 @@ export default function Summary() {
               </span>
               <br />
               I build systems that break gracefully and recover even better.
-              From Playwright suites catching 650+ edge cases to full-stack apps
+              From Playwright suites catching 840+ edge cases to full-stack apps
               deployed in the wild — I ship code I&apos;d trust with my own data.
               Automation isn&apos;t about replacing humans; it&apos;s about
               freeing them to focus on what actually matters.
@@ -124,30 +135,34 @@ export default function Summary() {
             </p>
           </div>
 
-          <div className="flex-1 grid grid-cols-2 lg:grid-cols-1 gap-4">
-            {[
-              { target: "650", suffix: "+", label: "Tests Written" },
-              { target: "5", suffix: "", label: "Projects Shipped" },
-              { target: "3", suffix: "", label: "Certifications" },
-              { target: "100", suffix: "%", label: "System Uptime" },
-            ].map((m) => (
-              <div
-                key={m.label}
-                className="metric-card border border-[var(--border-soft)] bg-black/40 p-5 text-center group hover:border-[var(--accent)]/50 hover:-translate-y-1 transition-all duration-200"
-              >
-                <div
-                  className="text-[var(--accent)] font-bold text-3xl md:text-4xl mb-1 metric-counter drop-shadow-[0_0_10px_rgba(0,255,136,0.35)]"
-                  data-target={m.target}
-                  data-suffix={m.suffix}
-                >
-                  0
-                </div>
-                <div className="text-[10px] text-slate-400 uppercase tracking-widest group-hover:text-[var(--accent)] transition-colors">
-                  {m.label}
-                </div>
-              </div>
-            ))}
+          <div className="summary-globe shrink-0 w-[min(92%,300px)] sm:w-[300px] lg:w-[280px] xl:w-[340px] aspect-square mx-auto lg:mx-0">
+            <InteractiveGlobe />
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 relative z-10">
+          {[
+            { target: "840", suffix: "+", label: "Tests Written" },
+            { target: "5", suffix: "", label: "Projects Shipped" },
+            { target: "3", suffix: "", label: "Certifications" },
+            { target: "100", suffix: "%", label: "System Uptime" },
+          ].map((m) => (
+            <div
+              key={m.label}
+              className="metric-card border border-[var(--border-soft)] bg-black/40 p-5 text-center group hover:border-[var(--accent)]/50 hover:-translate-y-1 transition-all duration-200"
+            >
+              <div
+                className="text-[var(--accent)] font-bold text-3xl md:text-4xl mb-1 metric-counter drop-shadow-[0_0_10px_rgba(0,255,136,0.35)]"
+                data-target={m.target}
+                data-suffix={m.suffix}
+              >
+                0
+              </div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-widest group-hover:text-[var(--accent)] transition-colors">
+                {m.label}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="text-xs text-slate-500 mt-6 border-t border-[var(--border-soft)] pt-4 relative z-10">

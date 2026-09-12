@@ -15,7 +15,7 @@ const projects = [
     stack: ["Node.js", "HTML", "CSS", "JavaScript"],
     link: "https://github.com/Rapid1234-star/Internship-management-site",
     desc: "Architected a full-stack internship portal with role-based access control, secure authentication, and optimized database queries for high-performance data retrieval.",
-    metric: "650+ TESTS, 8 MODULES",
+    metric: "840+ TESTS, 8 MODULES",
     icon: "devicon-nodejs-plain",
     image: "/projects/project_internship.jpg",
   },

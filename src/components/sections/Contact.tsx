@@ -117,7 +117,11 @@ export default function Contact() {
               <span className="text-[10px] text-slate-500 tracking-widest uppercase shrink-0">
                 {item.label}
               </span>
-              <span className="text-xs md:text-sm text-slate-300 group-hover:text-[var(--accent)] truncate">
+              <span
+                className={`text-xs md:text-sm text-slate-300 group-hover:text-[var(--accent)] min-w-0 ${
+                  item.label === "EMAIL" ? "break-all" : "truncate"
+                }`}
+              >
                 {item.value}
               </span>
             </a>

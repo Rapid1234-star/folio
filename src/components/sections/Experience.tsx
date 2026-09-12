@@ -110,7 +110,7 @@ export default function Experience() {
 
               <div className="grid grid-cols-2 gap-3 mb-2">
                 {[
-                  { target: "650", suffix: "+", label: "Tests written" },
+                  { target: "840", suffix: "+", label: "Tests written" },
                   { target: "8", suffix: "", label: "Platform modules" },
                   { target: "22", suffix: "", label: "Endpoint scripts" },
                   { target: "10", suffix: "", label: "Auto pitches" },
@@ -138,7 +138,7 @@ export default function Experience() {
               {[
                 {
                   title: "Test engineering & auth",
-                  body: "Built and maintained 650+ Playwright cases across 8 modules, plus an OTP-polling / session-reuse flow so 550+ tests run under one session — cutting redundant OTP noise and regression time.",
+                  body: "Built and maintained 840+ Playwright cases across 8 modules, plus an OTP-polling / session-reuse flow so 800+ tests run under one session — cutting redundant OTP noise and regression time.",
                 },
                 {
                   title: "Workflow automation",
