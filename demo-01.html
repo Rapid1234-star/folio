@@ -1,0 +1,2736 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050a05" />
+    <meta name="color-scheme" content="dark" />
+    <title>DEMO-01 — Perfect Layout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --green: #00ff41;
+        --green-dim: rgba(0, 255, 65, 0.12);
+        --green-mid: rgba(0, 255, 65, 0.25);
+        --bg: #050a05;
+        --card-bg: rgba(0, 0, 0, 0.55);
+        --card-solid: #0a0f0a;
+        --text: rgba(220, 230, 220, 0.92);
+        --text-dim: rgba(148, 163, 184, 0.7);
+        --text-muted: rgba(100, 116, 139, 0.8);
+      }
+      html {
+        color-scheme: dark;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ===== OVERLAYS ===== */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 16px;
+        z-index: 200;
+        background: var(--green);
+        color: #000;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: top 0.2s;
+      }
+      .skip-link:focus {
+        top: 16px;
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      #matrix {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.04;
+      }
+      .crt-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.1) 0px,
+          rgba(0, 0, 0, 0.1) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      }
+      .scanlines {
+        position: fixed;
+        inset: 0;
+        z-index: 15;
+        pointer-events: none;
+        opacity: 0.03;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          rgba(0, 255, 65, 0.015) 1px,
+          transparent 2px,
+          transparent 6px
+        );
+      }
+
+      /* ===== PROGRESS BAR ===== */
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+      }
+      .progress-bar .fill {
+        height: 100%;
+        background: var(--green);
+        box-shadow: 0 0 10px var(--green);
+        width: 0;
+        transition: width 0.1s linear;
+      }
+
+      /* ===== NAVBAR ===== */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 14px 24px;
+        z-index: 60;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        pointer-events: none;
+      }
+      @media (min-width: 768px) {
+        .navbar {
+          padding: 14px 48px;
+        }
+      }
+      @media (min-width: 1024px) {
+        .navbar {
+          padding: 14px 64px;
+        }
+      }
+      .navbar .logo {
+        font-size: 15px;
+        font-weight: bold;
+        color: #fff;
+        border: 1px solid rgba(0, 255, 65, 0.35);
+        background: rgba(0, 0, 0, 0.6);
+        padding: 6px 14px;
+        pointer-events: auto;
+        text-decoration: none;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+        touch-action: manipulation;
+      }
+      .navbar .logo:hover {
+        background: rgba(0, 255, 65, 0.15);
+        border-color: rgba(0, 255, 65, 0.5);
+      }
+      .navbar .logo:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .navbar .nav-links {
+        display: none;
+        gap: 4px;
+        border: 1px solid rgba(0, 255, 65, 0.35);
+        background: rgba(0, 0, 0, 0.6);
+        padding: 6px 10px;
+        pointer-events: auto;
+        backdrop-filter: blur(8px);
+      }
+      @media (min-width: 768px) {
+        .navbar .nav-links {
+          display: flex;
+          gap: 4px;
+          padding: 6px 12px;
+        }
+      }
+      .navbar .nav-links a {
+        font-size: 11px;
+        color: var(--text);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 6px 12px;
+        transition:
+          color 0.3s,
+          background 0.3s;
+        touch-action: manipulation;
+      }
+      .navbar .nav-links a:hover {
+        color: #fff;
+        background: rgba(0, 255, 65, 0.1);
+      }
+      .navbar .nav-links a:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: -2px;
+      }
+
+      /* ===== SECTIONS ===== */
+      section {
+        position: relative;
+        z-index: 10;
+        padding: 48px 24px;
+      }
+      @media (min-width: 768px) {
+        section {
+          padding: 64px 48px;
+        }
+      }
+      @media (min-width: 1024px) {
+        section {
+          padding: 80px 64px;
+        }
+      }
+      .section-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      /* ===== SECTION HEADER ===== */
+      .section-header {
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .section-header .section-number {
+        font-size: clamp(48px, 8vw, 96px);
+        font-weight: bold;
+        color: rgba(0, 255, 65, 0.07);
+        line-height: 1;
+        min-width: 80px;
+        text-align: right;
+        user-select: none;
+      }
+      .section-header .section-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .section-header .section-tag {
+        font-size: 11px;
+        font-weight: bold;
+        color: #000;
+        background: var(--green);
+        padding: 4px 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        display: inline-block;
+        width: fit-content;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      .section-header .section-tag:hover {
+        background: #000;
+        color: var(--green);
+        outline: 1px solid var(--green);
+        outline-offset: -1px;
+      }
+      .section-header h2 {
+        font-size: clamp(24px, 4vw, 40px);
+        color: #fff;
+        font-weight: bold;
+        letter-spacing: -0.01em;
+      }
+      .section-header .section-sub {
+        font-size: 14px;
+        color: var(--text-dim);
+      }
+      @media (max-width: 767px) {
+        .section-header {
+          gap: 8px;
+        }
+        .section-number {
+          font-size: 36px;
+          min-width: 40px;
+        }
+        .section-header h2 {
+          font-size: 20px;
+        }
+        .section-header .section-sub {
+          font-size: 12px;
+        }
+        .section-header .section-tag {
+          font-size: 10px;
+          padding: 3px 10px;
+        }
+      }
+
+      /* ===== CYBER CARD (version wrapper) ===== */
+      .cyber-card {
+        border: 1px solid rgba(0, 255, 65, 0.15);
+        background: var(--card-bg);
+        backdrop-filter: blur(6px);
+        padding: 28px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 32px;
+      }
+      @media (min-width: 768px) {
+        .cyber-card {
+          padding: 36px;
+        }
+      }
+      @media (max-width: 767px) {
+        .cyber-card {
+          padding: 20px;
+        }
+      }
+      .cyber-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(0, 255, 65, 0.3),
+          transparent
+        );
+      }
+      .cyber-card:hover {
+        border-color: rgba(0, 255, 65, 0.3);
+        box-shadow: 0 0 40px rgba(0, 255, 65, 0.03);
+      }
+
+      /* ===== VERSION LABEL ===== */
+      .version-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+      .label-badge {
+        font-size: 10px;
+        font-weight: bold;
+        color: #000;
+        background: var(--green);
+        padding: 4px 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .label-desc {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      /* ===================================================================
+   SHARED PROJECT CARD (.pc)
+   =================================================================== */
+      .pc {
+        border: 1px solid rgba(0, 255, 65, 0.12);
+        background: var(--card-solid);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition:
+          border-color 0.4s ease,
+          transform 0.4s ease,
+          box-shadow 0.4s ease;
+        will-change: transform;
+      }
+      .pc:hover {
+        border-color: rgba(0, 255, 65, 0.45);
+        transform: translateY(-6px) scale(1.01);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(0, 255, 65, 0.15),
+          0 0 60px -15px rgba(0, 255, 65, 0.12);
+      }
+      .pc .spotlight {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        background: radial-gradient(
+          350px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+          rgba(0, 255, 65, 0.1),
+          transparent 60%
+        );
+      }
+      .pc:hover .spotlight {
+        opacity: 1;
+      }
+      .pc .card-accent {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 255, 65, 0.5) 0%,
+          rgba(0, 255, 65, 0.1) 100%
+        );
+        transition:
+          background 0.4s ease,
+          width 0.3s ease;
+        z-index: 2;
+      }
+      .pc:hover .card-accent {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 255, 65, 0.9) 0%,
+          rgba(0, 255, 65, 0.4) 100%
+        );
+        width: 4px;
+      }
+      .pc .card-image {
+        height: 170px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .pc .card-image .ph-grad {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse at 30% 40%,
+            rgba(0, 255, 65, 0.08) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 60%,
+            rgba(59, 130, 246, 0.04) 0%,
+            transparent 50%
+          );
+        transition: background 0.4s ease;
+      }
+      .pc:hover .card-image .ph-grad {
+        background:
+          radial-gradient(
+            ellipse at 30% 40%,
+            rgba(0, 255, 65, 0.14) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 60%,
+            rgba(59, 130, 246, 0.07) 0%,
+            transparent 50%
+          );
+      }
+      .pc .card-image .ph-text {
+        position: relative;
+        z-index: 1;
+        color: rgba(0, 255, 65, 0.18);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+      .pc .card-image .ph-icon {
+        position: relative;
+        z-index: 1;
+        font-size: 32px;
+        color: rgba(0, 255, 65, 0.1);
+        margin-bottom: 4px;
+        transition:
+          color 0.4s ease,
+          transform 0.4s ease;
+      }
+      .pc:hover .card-image .ph-icon {
+        color: rgba(0, 255, 65, 0.2);
+        transform: scale(1.1);
+      }
+      .pc .card-body {
+        padding: 22px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .pc h3 {
+        font-size: clamp(15px, 1.8vw, 18px);
+        color: #fff;
+        font-weight: bold;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+        line-height: 1.3;
+      }
+      .pc .metric-badge {
+        display: inline-block;
+        font-size: 10px;
+        padding: 4px 10px;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        background: rgba(0, 255, 65, 0.06);
+        color: rgba(0, 255, 65, 0.8);
+        margin-bottom: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        width: fit-content;
+      }
+      .pc .desc {
+        font-size: 13px;
+        color: rgba(220, 230, 220, 0.7);
+        line-height: 1.7;
+        margin-bottom: 14px;
+        flex: 1;
+      }
+      .pc .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 14px;
+      }
+      .pc .tech-stack span {
+        font-size: 10px;
+        padding: 3px 8px;
+        border: 1px solid rgba(0, 255, 65, 0.12);
+        background: rgba(0, 255, 65, 0.04);
+        color: rgba(220, 230, 220, 0.75);
+        letter-spacing: 0.04em;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .pc:hover .tech-stack span {
+        border-color: rgba(0, 255, 65, 0.25);
+        background: rgba(0, 255, 65, 0.08);
+      }
+      .pc .card-actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(0, 255, 65, 0.08);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .pc .card-actions a {
+        color: var(--green);
+        text-decoration: none;
+        padding: 5px 12px;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        background: rgba(0, 255, 65, 0.06);
+        transition:
+          background 0.3s,
+          color 0.3s;
+        touch-action: manipulation;
+      }
+      .pc .card-actions a:hover {
+        background: var(--green);
+        color: #000;
+      }
+      .pc .card-actions a:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .pc .card-actions .disabled-link {
+        color: var(--text-muted);
+        cursor: not-allowed;
+        padding: 5px 12px;
+        border: 1px solid rgba(71, 85, 105, 0.25);
+        opacity: 0.5;
+      }
+
+      /* ===================================================================
+   VERSION 1: INFINITE AUTO-SLIDER (seamless loop)
+   =================================================================== */
+      .v1-slider {
+        position: relative;
+        overflow: hidden;
+        padding: 8px 0;
+      }
+      .v1-track {
+        display: flex;
+        gap: 20px;
+        will-change: transform;
+      }
+      .v1-card {
+        flex: 0 0 clamp(300px, 75vw, 400px);
+      }
+      .v1-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .v1-arrow {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        background: rgba(0, 0, 0, 0.5);
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+        touch-action: manipulation;
+      }
+      .v1-arrow:hover {
+        background: rgba(0, 255, 65, 0.1);
+        border-color: rgba(0, 255, 65, 0.5);
+      }
+      .v1-arrow:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .v1-dots {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .v1-dot {
+        width: 8px;
+        height: 8px;
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        background: transparent;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          border-color 0.3s,
+          transform 0.3s;
+        padding: 0;
+      }
+      .v1-dot.active {
+        background: var(--green);
+        border-color: var(--green);
+        transform: scale(1.3);
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+      }
+      .v1-dot:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .v1-counter {
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+      }
+
+      /* ===================================================================
+   VERSION 2: MAGNETIC DOCK (V3c — winner, full redesign)
+   =================================================================== */
+      .v2-scene {
+        padding: 40px 0;
+        overflow: hidden;
+      }
+      .v2-track {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 14px;
+        flex-wrap: nowrap;
+        min-height: 480px;
+        position: relative;
+      }
+
+      /* Dock bar (collapsed) */
+      .v2-card {
+        flex: 0 0 clamp(80px, 14vw, 120px);
+        height: clamp(160px, 28vw, 240px);
+        overflow: hidden;
+        border: 1px solid rgba(0, 255, 65, 0.08);
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        transition:
+          width 0.55s cubic-bezier(0.23, 1, 0.32, 1),
+          height 0.55s cubic-bezier(0.23, 1, 0.32, 1),
+          filter 0.4s ease,
+          opacity 0.4s ease,
+          border-color 0.4s ease,
+          box-shadow 0.4s ease;
+        opacity: 0.45;
+        filter: blur(1.5px);
+      }
+      .v2-card:hover {
+        opacity: 0.7;
+        filter: blur(0);
+      }
+
+      /* Dock bar label */
+      .v2-card .dock-label {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 8px 6px;
+        text-align: center;
+        font-size: 9px;
+        color: var(--text-dim);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: opacity 0.3s ease;
+        z-index: 5;
+      }
+      .v2-card:hover .dock-label {
+        color: var(--text);
+      }
+      .v2-card .dock-label .dock-name {
+        display: block;
+        font-size: 10px;
+        color: rgba(220, 230, 220, 0.85);
+        margin-bottom: 2px;
+        font-weight: bold;
+      }
+
+      /* Expanded card */
+      .v2-card.expanded {
+        flex: 0 0 clamp(340px, 55vw, 480px);
+        height: auto;
+        min-height: clamp(380px, 55vw, 480px);
+        border-color: rgba(0, 255, 65, 0.35);
+        box-shadow:
+          0 0 60px rgba(0, 255, 65, 0.08),
+          0 20px 60px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+        opacity: 1;
+        filter: none;
+        background: var(--card-solid);
+      }
+      .v2-card.expanded .dock-label {
+        opacity: 0;
+        height: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      /* Non-expanded: show ONLY the image, hide everything else */
+      .v2-card:not(.expanded) .pc {
+        border: none !important;
+        background: transparent !important;
+        overflow: visible;
+      }
+      .v2-card:not(.expanded) .pc .card-body {
+        display: none !important;
+      }
+      .v2-card:not(.expanded) .pc .card-accent {
+        display: none !important;
+      }
+      .v2-card:not(.expanded) .pc .spotlight {
+        display: none !important;
+      }
+      .v2-card:not(.expanded) .pc .card-image {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-bottom: none !important;
+        border-radius: 0 !important;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 255, 65, 0.12) 0%,
+          rgba(0, 20, 8, 0.6) 50%,
+          rgba(0, 0, 0, 0.9) 100%
+        ) !important;
+      }
+      .v2-card:not(.expanded) .pc .card-image .ph-grad {
+        background:
+          radial-gradient(
+            ellipse at 30% 30%,
+            rgba(0, 255, 65, 0.25) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 70%,
+            rgba(59, 130, 246, 0.12) 0%,
+            transparent 50%
+          ) !important;
+      }
+      .v2-card:not(.expanded) .pc .card-image .ph-text {
+        display: none !important;
+      }
+      .v2-card:not(.expanded) .pc .card-image .ph-icon {
+        color: rgba(0, 255, 65, 0.35) !important;
+        font-size: 40px !important;
+      }
+      .v2-card:not(.expanded):hover .pc .card-image .ph-icon {
+        color: rgba(0, 255, 65, 0.55) !important;
+        transform: scale(1.15);
+      }
+
+      /* Expanded card content — full .pc styling */
+      .v2-card.expanded .pc {
+        border: none;
+        background: transparent;
+      }
+      .v2-card.expanded .pc .card-image {
+        height: clamp(160px, 25vw, 200px);
+        border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+      }
+      .v2-card.expanded .pc .card-body {
+        padding: 20px 22px;
+        opacity: 1;
+        display: flex !important;
+        flex-direction: column;
+      }
+      .v2-card.expanded .pc .card-accent {
+        display: block;
+      }
+      .v2-card.expanded .pc .spotlight {
+        display: block;
+      }
+      .v2-card.expanded .pc .tech-stack {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .v2-card.expanded .pc .tech-stack span {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        font-size: 11px;
+        border-radius: 20px;
+        background: rgba(0, 255, 65, 0.08);
+        border: 1px solid rgba(0, 255, 65, 0.15);
+        color: rgba(220, 230, 220, 0.85);
+      }
+      .v2-card.expanded .pc .card-actions {
+        display: flex !important;
+        gap: 10px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(0, 255, 65, 0.08);
+      }
+      .v2-card.expanded .pc .card-actions a {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--green);
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        background: rgba(0, 255, 65, 0.06);
+        transition: all 0.25s ease;
+      }
+      .v2-card.expanded .pc .card-actions a:hover {
+        background: var(--green);
+        color: #000;
+      }
+      .v2-card.expanded .pc .card-actions .disabled-link {
+        display: inline-flex !important;
+        align-items: center;
+        padding: 8px 16px;
+        font-size: 12px;
+        border-radius: 8px;
+        color: var(--text-muted);
+        border: 1px solid rgba(71, 85, 105, 0.25);
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ===================================================================
+   VERSION 3: PYRAMID STACK (V3b — runner-up)
+   =================================================================== */
+      .v3-scene {
+        perspective: 1000px;
+        padding: 40px 0;
+        overflow: hidden;
+      }
+      .v3-track {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        position: relative;
+        height: 460px;
+        transform-style: preserve-3d;
+      }
+      .v3-card {
+        position: absolute;
+        width: clamp(260px, 45vw, 350px);
+        transition:
+          transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+          opacity 0.5s ease,
+          filter 0.5s ease;
+        will-change: transform;
+      }
+      .v3-controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .v3-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        background: rgba(0, 0, 0, 0.5);
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+        touch-action: manipulation;
+      }
+      .v3-btn:hover {
+        background: rgba(0, 255, 65, 0.1);
+        border-color: rgba(0, 255, 65, 0.5);
+      }
+      .v3-btn:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .v3-dots {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin: 0 12px;
+      }
+      .v3-dot {
+        width: 8px;
+        height: 8px;
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s;
+        padding: 0;
+      }
+      .v3-dot.active {
+        background: var(--green);
+        border-color: var(--green);
+        transform: scale(1.3);
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+      }
+      .v3-dot:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ===================================================================
+   VERSION 4: MASONRY GRID (fallback)
+   =================================================================== */
+      .v4-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      @media (min-width: 640px) {
+        .v4-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+      }
+      @media (min-width: 1024px) {
+        .v4-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+        }
+      }
+      .v4-item {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+      .v4-item.span-2 {
+        grid-column: span 1;
+      }
+      @media (min-width: 640px) {
+        .v4-item.span-2 {
+          grid-column: span 2;
+        }
+      }
+      @media (min-width: 1024px) {
+        .v4-item.span-2 {
+          grid-column: span 2;
+        }
+      }
+      .v4-item.tall .pc .card-image {
+        height: 220px;
+      }
+      @media (max-width: 639px) {
+        .v4-item.tall .pc .card-image {
+          height: 170px;
+        }
+      }
+      .v4-item.wide .pc .card-image {
+        height: 200px;
+      }
+
+      /* ===== HERO ===== */
+      #hero {
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 100px 24px 80px;
+      }
+      .terminal-window {
+        width: 100%;
+        max-width: 900px;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        padding: 32px 28px;
+        position: relative;
+        box-shadow:
+          0 0 60px rgba(0, 255, 65, 0.06),
+          inset 0 0 60px rgba(0, 255, 65, 0.02);
+      }
+      @media (min-width: 768px) {
+        .terminal-window {
+          padding: 48px 40px;
+        }
+      }
+      .terminal-window .top-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+          to right,
+          rgba(0, 255, 65, 0.9),
+          transparent
+        );
+      }
+      .terminal-window .session-tag {
+        position: absolute;
+        top: -13px;
+        left: 24px;
+        background: var(--green);
+        color: #000;
+        padding: 3px 14px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .boot-line {
+        font-size: 15px;
+        color: var(--green);
+        margin-bottom: 6px;
+        min-height: 1.5em;
+        opacity: 0;
+      }
+      @media (min-width: 768px) {
+        .boot-line {
+          font-size: 17px;
+        }
+      }
+      .boot-line .white {
+        color: #fff;
+      }
+      .boot-line .slate {
+        color: var(--text-dim);
+      }
+      .boot-line .granted {
+        color: #000;
+        background: var(--green);
+        padding: 2px 10px;
+        font-weight: bold;
+      }
+      .hero-name {
+        font-size: clamp(32px, 6vw, 72px);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        margin: 24px 0 16px;
+        letter-spacing: -0.02em;
+      }
+      .hero-cursor {
+        display: inline-block;
+        width: 3px;
+        height: 0.9em;
+        background: var(--green);
+        margin-left: 4px;
+        animation: blink 0.8s step-end infinite;
+        vertical-align: middle;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      .hero-role {
+        font-size: clamp(16px, 2.5vw, 24px);
+        color: rgba(0, 255, 65, 0.75);
+        margin-bottom: 28px;
+      }
+      .hero-role .highlight {
+        color: #fff;
+        background: rgba(0, 255, 65, 0.15);
+        padding: 2px 10px;
+        border-bottom: 2px solid var(--green);
+      }
+      .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .hero-tags span {
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        padding: 8px 16px;
+        font-size: 13px;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .hero-tags span:hover {
+        border-color: rgba(0, 255, 65, 0.5);
+        background: rgba(0, 255, 65, 0.08);
+      }
+      .hero-tags .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        animation: pulseBg 2s ease-in-out infinite;
+      }
+      .hero-download {
+        margin-top: 32px;
+      }
+      .hero-download a {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(0, 255, 65, 0.5);
+        padding: 14px 28px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--green);
+        text-decoration: none;
+        background: rgba(0, 0, 0, 0.5);
+        transition:
+          background 0.3s,
+          color 0.3s;
+        touch-action: manipulation;
+      }
+      .hero-download a:hover {
+        background: var(--green);
+        color: #000;
+      }
+      .hero-download a:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .hero-download a .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulseBg 1.5s ease-in-out infinite;
+      }
+
+      /* ===== SUMMARY / EXPERIENCE / SKILLS / EDUCATION / FOOTER ===== */
+      .summary-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      @media (min-width: 1024px) {
+        .summary-grid {
+          flex-direction: row;
+          gap: 40px;
+        }
+        .summary-text {
+          flex: 2;
+        }
+        .summary-metrics {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+      }
+      .summary-text p {
+        margin-bottom: 18px;
+        font-size: 15px;
+        color: var(--text);
+        line-height: 1.8;
+      }
+      .summary-text .prompt {
+        color: #fff;
+        font-weight: bold;
+      }
+      .metric-card {
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        background: rgba(0, 255, 65, 0.04);
+        padding: 22px;
+        text-align: center;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .metric-card:hover {
+        border-color: rgba(0, 255, 65, 0.5);
+        transform: translateY(-2px);
+      }
+      .metric-card .num {
+        font-size: clamp(36px, 5vw, 52px);
+        font-weight: bold;
+        color: var(--green);
+        font-variant-numeric: tabular-nums;
+      }
+      .metric-card .label {
+        font-size: 12px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-top: 6px;
+      }
+      .exp-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      @media (min-width: 768px) {
+        .exp-layout {
+          flex-direction: row;
+          gap: 32px;
+        }
+        .exp-left {
+          flex: 2;
+        }
+        .exp-right {
+          flex: 3;
+        }
+      }
+      .exp-header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(0, 255, 65, 0.12);
+      }
+      @media (min-width: 768px) {
+        .exp-header {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+      }
+      .exp-header h2 {
+        font-size: clamp(20px, 3vw, 28px);
+        color: #fff;
+        font-weight: bold;
+      }
+      .exp-header .sub {
+        color: var(--text);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+      .exp-header .dates {
+        font-size: 12px;
+        color: var(--text-dim);
+        border: 1px solid rgba(71, 85, 105, 0.5);
+        padding: 6px 12px;
+        background: rgba(15, 23, 42, 0.8);
+        white-space: nowrap;
+      }
+      .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      @media (min-width: 768px) {
+        .metrics-row {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .metric-sm {
+        border: 1px solid rgba(0, 255, 65, 0.12);
+        background: rgba(0, 255, 65, 0.04);
+        padding: 14px;
+        text-align: center;
+        transition: border-color 0.3s;
+      }
+      .metric-sm:hover {
+        border-color: rgba(0, 255, 65, 0.4);
+      }
+      .metric-sm .num {
+        font-size: clamp(22px, 2.5vw, 28px);
+        font-weight: bold;
+        color: var(--green);
+        font-variant-numeric: tabular-nums;
+      }
+      .metric-sm .label {
+        font-size: 10px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 3px;
+      }
+      .bullet {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 14px;
+        margin-bottom: 10px;
+        border-left: 2px solid rgba(0, 255, 65, 0.25);
+        background: rgba(0, 0, 0, 0.3);
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.7;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .bullet:hover {
+        border-left-color: var(--green);
+        background: rgba(0, 255, 65, 0.03);
+      }
+      .bullet .marker {
+        color: var(--green);
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .bullet strong {
+        color: #fff;
+      }
+      .tags-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(0, 255, 65, 0.08);
+      }
+      .tags-row .tag-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-right: 8px;
+        padding-top: 3px;
+      }
+      .tags-row span {
+        font-size: 11px;
+        padding: 5px 12px;
+        border: 1px solid rgba(0, 255, 65, 0.15);
+        background: rgba(0, 255, 65, 0.06);
+        color: var(--text);
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      .tags-row span:hover {
+        background: rgba(0, 255, 65, 0.12);
+        color: #fff;
+      }
+      .skills-logo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      @media (max-width: 768px) {
+        .skills-logo-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 480px) {
+        .skills-logo-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .skill-logo-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid rgba(0, 255, 65, 0.1);
+        background: rgba(0, 0, 0, 0.3);
+        transition:
+          border-color 0.3s,
+          background 0.3s,
+          transform 0.2s;
+        cursor: default;
+      }
+      .skill-logo-card:hover {
+        border-color: rgba(0, 255, 65, 0.3);
+        background: rgba(0, 255, 65, 0.03);
+        transform: translateY(-2px);
+      }
+      .skill-logo-card i {
+        font-size: 28px;
+        width: 36px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .skill-logo-card .skill-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .skill-logo-card .skill-name {
+        font-size: 13px;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .skill-logo-card .skill-tag {
+        font-size: 10px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .skill-logo-card .pw-badge {
+        font-size: 11px;
+        font-weight: bold;
+        color: #22d3ee;
+        background: rgba(34, 211, 238, 0.1);
+        border: 1px solid rgba(34, 211, 238, 0.3);
+        padding: 2px 8px;
+        letter-spacing: 0.05em;
+      }
+      .edu-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      @media (min-width: 1024px) {
+        .edu-grid {
+          flex-direction: row;
+          align-items: stretch;
+        }
+      }
+      .edu-grid > div {
+        flex: 1;
+      }
+      .edu-card {
+        border: 1px solid rgba(0, 255, 65, 0.15);
+        background: rgba(0, 0, 0, 0.6);
+        padding: 28px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 220px;
+      }
+      .edu-card .status {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: rgba(0, 255, 65, 0.12);
+        color: var(--text);
+        border-bottom: 1px solid rgba(0, 255, 65, 0.25);
+        border-left: 1px solid rgba(0, 255, 65, 0.25);
+        padding: 5px 12px;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+      }
+      .edu-card h2 {
+        font-size: clamp(18px, 2.5vw, 22px);
+        color: #fff;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .edu-card .detail {
+        color: var(--text);
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+      .edu-card .date {
+        font-size: 12px;
+        color: var(--text-dim);
+        border: 1px solid rgba(71, 85, 105, 0.5);
+        padding: 6px 12px;
+        background: rgba(15, 23, 42, 0.8);
+        display: inline-block;
+      }
+      .edu-card h3 {
+        font-size: 13px;
+        color: var(--text);
+        border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+        padding-bottom: 10px;
+        margin-bottom: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .cert-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid rgba(0, 255, 65, 0.04);
+      }
+      .cert-item:last-child {
+        border-bottom: none;
+      }
+      .cert-item .marker {
+        color: var(--green);
+      }
+      .site-footer {
+        border-top: 1px solid rgba(0, 255, 65, 0.12);
+        padding: 40px 24px;
+        position: relative;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.5);
+      }
+      .site-footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        text-align: center;
+      }
+      @media (min-width: 768px) {
+        .site-footer-inner {
+          flex-direction: row;
+          justify-content: space-between;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-brand {
+        font-size: 14px;
+        color: #fff;
+        font-weight: bold;
+      }
+      .site-footer .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .site-footer .footer-links a {
+        font-size: 12px;
+        color: var(--text);
+        text-decoration: none;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        padding: 6px 14px;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      .site-footer .footer-links a:hover {
+        background: rgba(0, 255, 65, 0.1);
+        color: #fff;
+      }
+      .site-footer .footer-copy {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+      .scroll-hint {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        z-index: 50;
+        opacity: 0.7;
+        transition: opacity 0.4s;
+      }
+      .scroll-hint.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .back-to-top {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 255, 65, 0.35);
+        background: rgba(0, 0, 0, 0.7);
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 60;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition:
+          opacity 0.3s,
+          transform 0.3s,
+          background 0.3s,
+          border-color 0.3s;
+        backdrop-filter: blur(8px);
+        text-decoration: none;
+      }
+      .back-to-top.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .back-to-top:hover {
+        background: rgba(0, 255, 65, 0.15);
+        border-color: rgba(0, 255, 65, 0.5);
+      }
+      @keyframes pulseBg {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div
+      class="progress-bar"
+      role="progressbar"
+      aria-label="Page scroll progress"
+    >
+      <div class="fill" id="progress-fill"></div>
+    </div>
+    <canvas id="matrix" aria-hidden="true"></canvas>
+    <div class="crt-overlay" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <nav class="navbar" aria-label="Main navigation">
+      <a class="logo" href="#hero">TRACE_0 // A.D_</a>
+      <div class="nav-links">
+        <a href="#summary">[ ABOUT ]</a>
+        <a href="#experience">[ EXP ]</a>
+        <a href="#projects">[ WORK ]</a>
+        <a href="#skills">[ SKILLS ]</a>
+        <a href="#education">[ EDU ]</a>
+      </div>
+    </nav>
+
+    <section id="hero">
+      <div class="terminal-window">
+        <div class="top-bar" aria-hidden="true"></div>
+        <div class="session-tag" aria-hidden="true">TERMINAL_SESSION</div>
+        <div class="boot-line">&gt; Establishing secure connection&hellip;</div>
+        <div class="boot-line">
+          &gt; Login: <span class="white">aayan_desai@system</span>
+        </div>
+        <div class="boot-line">
+          &gt; Password: <span class="slate">********************</span>
+        </div>
+        <div class="boot-line">
+          &gt; Access: <span class="granted">GRANTED</span>
+        </div>
+        <div class="boot-line" style="color: var(--text-dim)">
+          &gt; fetch_profile &mdash;user aayan_desai
+        </div>
+        <h1 class="hero-name">
+          AAYAN IRSHAD DESAI<span class="hero-cursor" aria-hidden="true"></span>
+        </h1>
+        <div class="hero-role">
+          &gt; target_role:
+          <span class="highlight">QA Automation Engineer</span>
+        </div>
+        <div class="hero-tags">
+          <span
+            ><span class="dot" aria-hidden="true"></span> LOC: AL NAHDA,
+            SHARJAH</span
+          >
+          <span>TEL: +971-56-123-5034</span>
+          <span>EMAIL: aayanirshad99@gmail.com</span>
+          <span>GITHUB: Rapid1234-star</span>
+          <span>LINKEDIN: aayan-desai</span>
+        </div>
+        <div class="hero-download">
+          <div
+            style="font-size: 13px; color: var(--text-dim); margin-bottom: 10px"
+          >
+            <span style="color: var(--green)">&gt;</span> wget
+            https://system.core/aayan_cv.pdf<br />
+            <span style="color: var(--green); opacity: 0.7"
+              >[====================================&gt;] 100%</span
+            >
+          </div>
+          <a href="#" aria-label="Download CV PDF"
+            ><span class="pulse-dot" aria-hidden="true"></span> [
+            DOWNLOAD_CV.PDF ]</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <main id="main-content">
+      <section id="summary">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-number">01</div>
+            <div class="section-title-group">
+              <div class="section-tag">SYS_LOG :: 0x01_SUMMARY</div>
+              <h2>About Me</h2>
+              <div class="section-sub">Candidate profile analysis complete</div>
+            </div>
+          </div>
+          <div class="cyber-card">
+            <div class="summary-grid">
+              <div class="summary-text">
+                <p>
+                  <span class="prompt"
+                    >&gt; Analyzing candidate profile&hellip;</span
+                  ><br />Cybersecurity-focused Computer Science student and QA
+                  Automation Engineer with hands-on experience building
+                  large-scale Playwright test suites, production web systems,
+                  and AI-driven automation pipelines.
+                </p>
+                <p>
+                  <span class="prompt"
+                    >&gt; Extracting key capabilities&hellip;</span
+                  ><br />Skilled at engineering authentication workarounds,
+                  validating endpoint remediation at scale, and shipping
+                  full-stack applications from React/Node.js frontends to
+                  Python-based computer vision systems.
+                </p>
+                <p>
+                  <span class="prompt"
+                    >&gt; Decoding personal profile&hellip;</span
+                  ><br />Beyond the terminal, I&rsquo;m deeply passionate about
+                  the intersection of human psychology and digital security. I
+                  spend my free time participating in CTF challenges, exploring
+                  the latest in zero-day vulnerabilities, and optimizing system
+                  architectures for maximum resilience.
+                </p>
+              </div>
+              <div class="summary-metrics">
+                <div class="metric-card">
+                  <div class="num">650+</div>
+                  <div class="label">Tests Written</div>
+                </div>
+                <div class="metric-card">
+                  <div class="num">5</div>
+                  <div class="label">Projects Shipped</div>
+                </div>
+                <div class="metric-card">
+                  <div class="num">3</div>
+                  <div class="label">Certifications</div>
+                </div>
+                <div class="metric-card">
+                  <div class="num">100%</div>
+                  <div class="label">System Uptime</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-number">02</div>
+            <div class="section-title-group">
+              <div class="section-tag">SYS_LOG :: 0x02_EXPERIENCE</div>
+              <h2>Experience</h2>
+              <div class="section-sub">Professional work history</div>
+            </div>
+          </div>
+          <div class="cyber-card">
+            <div class="exp-layout">
+              <div class="exp-left">
+                <div class="exp-header">
+                  <div>
+                    <h2>&gt; QA &amp; Automation Intern</h2>
+                    <div class="sub">
+                      @ Patchifi
+                      <span style="color: rgba(71, 85, 105, 0.7)">|</span>
+                      Remote
+                      <span style="color: rgba(71, 85, 105, 0.7)">|</span>
+                      Cybersecurity &amp; Patch Management
+                    </div>
+                  </div>
+                  <div class="dates">[ APR 2026 &ndash; SEPT 2026 ]</div>
+                </div>
+                <div class="metrics-row">
+                  <div class="metric-sm">
+                    <div class="num">650+</div>
+                    <div class="label">Tests Written</div>
+                  </div>
+                  <div class="metric-sm">
+                    <div class="num">8</div>
+                    <div class="label">Platform Modules</div>
+                  </div>
+                  <div class="metric-sm">
+                    <div class="num">22</div>
+                    <div class="label">Endpoint Scripts</div>
+                  </div>
+                  <div class="metric-sm">
+                    <div class="num">10</div>
+                    <div class="label">Auto Pitches</div>
+                  </div>
+                </div>
+                <div class="tags-row">
+                  <span class="tag-label">DEPENDENCIES_LOADED:</span>
+                  <span>Playwright</span><span>JavaScript/TypeScript</span
+                  ><span>n8n</span><span>Wix</span><span>Azure Bastion</span
+                  ><span>Windows Registry</span><span>Excel</span>
+                </div>
+              </div>
+              <div class="exp-right">
+                <div class="bullet">
+                  <span class="marker" aria-hidden="true">[*]</span>
+                  <p>
+                    <strong>Test Engineering &amp; Authentication:</strong>
+                    Built and maintained 650+ automated Playwright test cases
+                    across 8 core platform modules, engineered a custom
+                    OTP-polling/session-reuse workflow enabling 550+ tests under
+                    one authenticated session.
+                  </p>
+                </div>
+                <div class="bullet">
+                  <span class="marker" aria-hidden="true">[*]</span>
+                  <p>
+                    <strong>Workflow Automation:</strong> Designed and deployed
+                    an n8n + AI pipeline that auto-publishes company blog
+                    content to LinkedIn, then pitched 10 additional automation
+                    opportunities directly to the CEO.
+                  </p>
+                </div>
+                <div class="bullet">
+                  <span class="marker" aria-hidden="true">[*]</span>
+                  <p>
+                    <strong>Endpoint &amp; Systems Testing:</strong> Validated
+                    22 endpoint remediation scripts for Chrome, Edge, Firefox,
+                    and Dropbox via Azure Bastion, verifying Windows Registry
+                    policies, services, and scheduled tasks.
+                  </p>
+                </div>
+                <div class="bullet">
+                  <span class="marker" aria-hidden="true">[*]</span>
+                  <p>
+                    <strong>Web QA &amp; Production Maintenance:</strong> Led a
+                    full desktop/mobile QA audit of the production Wix site,
+                    logging defects in a screenshot-backed tracker, then
+                    resolved UI issues.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-number">03</div>
+            <div class="section-title-group">
+              <div class="section-tag">SYS_LOG :: 0x03_PROJECT_ARCHIVES</div>
+              <h2>Projects</h2>
+              <div class="section-sub">
+                5 deployed projects &mdash; 4 layout versions
+              </div>
+            </div>
+          </div>
+
+          <!-- VERSION 1: INFINITE AUTO-SLIDER (seamless) -->
+          <div class="cyber-card">
+            <div class="version-label">
+              <span class="label-badge">VERSION_1</span
+              ><span class="label-desc"
+                >Infinite Auto-Slider &mdash; seamless horizontal loop, pauses
+                on hover</span
+              >
+            </div>
+            <div class="v1-slider" id="v1-slider">
+              <div class="v1-track" id="v1-track"></div>
+            </div>
+            <div class="v1-controls">
+              <button class="v1-arrow" id="v1-prev" aria-label="Previous">
+                &larr;
+              </button>
+              <div class="v1-dots" id="v1-dots"></div>
+              <span class="v1-counter" id="v1-counter">1 / 5</span>
+              <button class="v1-arrow" id="v1-next" aria-label="Next">
+                &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- VERSION 2: MAGNETIC DOCK (winner) -->
+          <div class="cyber-card">
+            <div class="version-label">
+              <span class="label-badge">VERSION_2</span
+              ><span class="label-desc"
+                >Magnetic Dock &mdash; click to expand, click outside to
+                collapse</span
+              >
+            </div>
+            <div class="v2-scene" id="v2-scene">
+              <div class="v2-track" id="v2-track"></div>
+            </div>
+          </div>
+
+          <!-- VERSION 3: PYRAMID STACK (runner-up, auto-rotate) -->
+          <div class="cyber-card">
+            <div class="version-label">
+              <span class="label-badge">VERSION_3</span
+              ><span class="label-desc"
+                >Pyramid Stack &mdash; 3D hierarchy, infinite
+                auto-rotation</span
+              >
+            </div>
+            <div class="v3-scene" id="v3-scene">
+              <div class="v3-track" id="v3-track"></div>
+            </div>
+            <div class="v3-controls">
+              <button class="v3-btn" id="v3-prev" aria-label="Previous">
+                &larr;
+              </button>
+              <div class="v3-dots" id="v3-dots"></div>
+              <button class="v3-btn" id="v3-next" aria-label="Next">
+                &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- VERSION 4: MASONRY GRID (fallback) -->
+          <div class="cyber-card">
+            <div class="version-label">
+              <span class="label-badge">VERSION_4</span
+              ><span class="label-desc"
+                >Masonry Grid &mdash; asymmetric layout, fallback option</span
+              >
+            </div>
+            <div class="v4-grid" id="v4-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-number">04</div>
+            <div class="section-title-group">
+              <div class="section-tag">SYS_LOG :: 0x04_SKILL_MATRIX</div>
+              <h2>Skills</h2>
+              <div class="section-sub">
+                Tech stack &amp; proficiencies loaded
+              </div>
+            </div>
+          </div>
+          <div class="cyber-card">
+            <div class="skills-logo-grid">
+              <div class="skill-logo-card">
+                <i class="devicon-javascript-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">JavaScript</span
+                  ><span class="skill-tag">Language</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-typescript-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">TypeScript</span
+                  ><span class="skill-tag">Language</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-python-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">Python</span
+                  ><span class="skill-tag">Language</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-react-original"></i>
+                <div class="skill-info">
+                  <span class="skill-name">React</span
+                  ><span class="skill-tag">Framework</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-nodejs-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">Node.js</span
+                  ><span class="skill-tag">Runtime</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-html5-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">HTML5</span
+                  ><span class="skill-tag">Markup</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-css3-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">CSS3</span
+                  ><span class="skill-tag">Styling</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-playwright-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">Playwright</span
+                  ><span class="skill-tag">Testing</span
+                  ><span class="pw-badge">PW</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-git-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">Git</span
+                  ><span class="skill-tag">VCS</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-mysql-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">MySQL</span
+                  ><span class="skill-tag">Database</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-azure-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">Azure</span
+                  ><span class="skill-tag">Cloud</span>
+                </div>
+              </div>
+              <div class="skill-logo-card">
+                <i class="devicon-openai-plain"></i>
+                <div class="skill-info">
+                  <span class="skill-name">OpenCV</span
+                  ><span class="skill-tag">Computer Vision</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="education">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-number">05</div>
+            <div class="section-title-group">
+              <div class="section-tag">SYS_LOG :: 0x05_EDU_LOG</div>
+              <h2>Education</h2>
+              <div class="section-sub">
+                Academic credentials &amp; certifications
+              </div>
+            </div>
+          </div>
+          <div class="cyber-card">
+            <div class="edu-grid">
+              <div>
+                <div class="edu-card">
+                  <div class="status">IN_PROGRESS</div>
+                  <h2>Bachelor of Computer Science</h2>
+                  <div class="detail">University of Wollongong in Dubai</div>
+                  <div class="date">[ 2023 &ndash; 2027 ]</div>
+                  <h3 style="margin-top: 20px">CERTIFICATIONS</h3>
+                  <div class="cert-item">
+                    <span class="marker">&gt;</span> CS50x: Introduction to
+                    Computer Science (Harvard)
+                  </div>
+                  <div class="cert-item">
+                    <span class="marker">&gt;</span> CS50 Cybersecurity
+                    (Harvard)
+                  </div>
+                  <div class="cert-item">
+                    <span class="marker">&gt;</span> Azure Fundamentals
+                    (Microsoft)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div class="footer-brand">TRACE_0 // A.D_</div>
+        <div class="footer-links">
+          <a href="#">GitHub</a><a href="#">LinkedIn</a
+          ><a href="mailto:aayanirshad99@gmail.com">Email</a>
+        </div>
+        <div class="footer-copy">
+          &copy; 2026 Aayan Irshad Desai. All systems operational.
+        </div>
+      </div>
+    </footer>
+
+    <div class="scroll-hint" id="scroll-hint">&darr; SCROLL &darr;</div>
+    <a
+      href="#hero"
+      class="back-to-top"
+      id="back-to-top"
+      aria-label="Back to top"
+      >&uarr;</a
+    >
+
+    <script>
+      var PROJECTS = [
+        {
+          title: "> Internship Management System",
+          metric: "[ METRIC: 650+ TESTS, 8 MODULES ]",
+          desc: "Architected a full-stack internship portal with role-based access control, secure authentication, and optimized database queries for high-performance data retrieval.",
+          tech: ["Node.js", "HTML", "CSS", "JavaScript"],
+          icon: "devicon-nodejs-plain",
+        },
+        {
+          title: "> AI Resume Analyzer",
+          metric: "[ METRIC: 30% ACCURACY BOOST ]",
+          desc: "Built a TypeScript-based analyzer that dynamically parses, evaluates, and scores resume content with AI-powered insights.",
+          tech: ["TypeScript", "JavaScript", "AI Integration"],
+          icon: "devicon-typescript-plain",
+        },
+        {
+          title: "> Voice Scam Shield",
+          metric: null,
+          desc: "Prototyped a real-time web application for detecting and flagging voice-based fraud and scam patterns using AI analysis.",
+          tech: ["TypeScript", "JavaScript", "AI Integration"],
+          icon: "devicon-python-plain",
+        },
+        {
+          title: "> AI Face & Object Detection",
+          metric: "[ METRIC: 20% ACCURACY BOOST ]",
+          desc: "Developed a Python facial recognition system with real-time image processing, plus a browser-based object detector using COCO-SSD.",
+          tech: ["Python", "OpenCV", "JavaScript", "COCO-SSD"],
+          icon: "devicon-python-plain",
+        },
+        {
+          title: "> Hand Snake",
+          metric: null,
+          desc: "Built a hand-gesture-controlled browser game combining MediaPipe motion tracking with a React/TypeScript frontend and a Python reference engine.",
+          tech: ["React", "TypeScript", "MediaPipe", "Python"],
+          icon: "devicon-react-original",
+        },
+      ];
+
+      function cardHTML(p) {
+        var m = p.metric
+          ? '<div class="metric-badge">' + p.metric + "</div>"
+          : "";
+        var t = p.tech
+          .map(function (s) {
+            return "<span>" + s + "</span>";
+          })
+          .join("");
+        return (
+          '<div class="spotlight"></div><div class="card-accent"></div><div class="card-image"><div class="ph-grad"></div><i class="ph-icon ' +
+          p.icon +
+          '" aria-hidden="true"></i><span class="ph-text">[ VISUAL_DATA_MISSING ]</span></div><div class="card-body"><h3>' +
+          p.title +
+          "</h3>" +
+          m +
+          '<p class="desc">' +
+          p.desc +
+          '</p><div class="tech-stack">' +
+          t +
+          '</div><div class="card-actions"><a href="#">[ SOURCE ]</a><span class="disabled-link">LIVE_DEMO</span></div></div>'
+        );
+      }
+
+      /* ===== SPOTLIGHT GLOW ===== */
+      document.addEventListener(
+        "pointermove",
+        function (e) {
+          var cards = document.querySelectorAll(".pc");
+          for (var i = 0; i < cards.length; i++) {
+            var r = cards[i].getBoundingClientRect();
+            cards[i].style.setProperty("--spot-x", e.clientX - r.left + "px");
+            cards[i].style.setProperty("--spot-y", e.clientY - r.top + "px");
+          }
+        },
+        { passive: true },
+      );
+
+      /* ===================================================================
+   V1: INFINITE AUTO-SLIDER (seamless double-raf reset)
+   =================================================================== */
+      (function () {
+        var track = document.getElementById("v1-track");
+        var dotsEl = document.getElementById("v1-dots");
+        var counterEl = document.getElementById("v1-counter");
+        var prevBtn = document.getElementById("v1-prev");
+        var nextBtn = document.getElementById("v1-next");
+        var wrap = document.getElementById("v1-slider");
+        if (!track) return;
+        var N = PROJECTS.length,
+          idx = 0,
+          isPaused = false,
+          timer = null,
+          cW = 0;
+
+        function render() {
+          var h = "";
+          for (var r = 0; r < 2; r++)
+            for (var i = 0; i < N; i++)
+              h +=
+                '<div class="v1-card"><div class="pc">' +
+                cardHTML(PROJECTS[i]) +
+                "</div></div>";
+          track.innerHTML = h;
+        }
+        function calcW() {
+          var f = track.querySelector(".v1-card");
+          return f ? f.offsetWidth + 20 : 320;
+        }
+        function go(anim) {
+          cW = calcW();
+          track.style.transition =
+            anim !== false
+              ? "transform .5s cubic-bezier(.25,.46,.45,.94)"
+              : "none";
+          track.style.transform = "translateX(-" + idx * cW + "px)";
+          if (counterEl) counterEl.textContent = (idx % N) + 1 + " / " + N;
+          updDots();
+        }
+        function mkDots() {
+          if (!dotsEl) return;
+          dotsEl.innerHTML = "";
+          for (var i = 0; i < N; i++) {
+            var d = document.createElement("button");
+            d.className = "v1-dot" + (i === 0 ? " active" : "");
+            d.setAttribute("aria-label", "Project " + (i + 1));
+            (function (n) {
+              d.addEventListener("click", function () {
+                idx = n;
+                go();
+                reset();
+              });
+            })(i);
+            dotsEl.appendChild(d);
+          }
+        }
+        function updDots() {
+          if (!dotsEl) return;
+          var ds = dotsEl.querySelectorAll(".v1-dot");
+          for (var i = 0; i < ds.length; i++)
+            ds[i].classList.toggle("active", i === idx % N);
+        }
+        function next() {
+          idx++;
+          if (idx >= N) {
+            idx = 0;
+            track.style.transition = "none";
+            track.style.transform = "translateX(0)";
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                idx = 1;
+                go();
+              });
+            });
+            return;
+          }
+          go();
+        }
+        function prev() {
+          idx--;
+          if (idx < 0) {
+            idx = N - 1;
+            track.style.transition = "none";
+            track.style.transform = "translateX(-" + N * calcW() + "px)";
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                idx = N - 2;
+                go();
+              });
+            });
+            return;
+          }
+          go();
+        }
+        function start() {
+          stop();
+          timer = setInterval(function () {
+            if (!isPaused) next();
+          }, 3500);
+        }
+        function stop() {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+        function reset() {
+          stop();
+          if (!isPaused) start();
+        }
+        if (prevBtn)
+          prevBtn.addEventListener("click", function () {
+            prev();
+            reset();
+          });
+        if (nextBtn)
+          nextBtn.addEventListener("click", function () {
+            next();
+            reset();
+          });
+        if (wrap) {
+          wrap.addEventListener("mouseenter", function () {
+            isPaused = true;
+          });
+          wrap.addEventListener("mouseleave", function () {
+            isPaused = false;
+          });
+        }
+        var tx = 0;
+        track.addEventListener(
+          "touchstart",
+          function (e) {
+            tx = e.changedTouches[0].screenX;
+          },
+          { passive: true },
+        );
+        track.addEventListener(
+          "touchend",
+          function (e) {
+            var d = tx - e.changedTouches[0].screenX;
+            if (Math.abs(d) > 50) {
+              d > 0 ? next() : prev();
+              reset();
+            }
+          },
+          { passive: true },
+        );
+        window.addEventListener("resize", function () {
+          go(false);
+        });
+        render();
+        mkDots();
+        go(false);
+        start();
+      })();
+
+      /* ===================================================================
+   V2: MAGNETIC DOCK (click-outside collapse, labels)
+   =================================================================== */
+      (function () {
+        var track = document.getElementById("v2-track");
+        var scene = document.getElementById("v2-scene");
+        if (!track) return;
+        var N = PROJECTS.length,
+          expanded = -1;
+
+        function truncName(s, n) {
+          return s.length > n ? s.substring(0, n) + "…" : s;
+        }
+
+        function render() {
+          var h = "";
+          for (var i = 0; i < N; i++) {
+            var p = PROJECTS[i];
+            var name = truncName(p.title.replace(/^>\s*/, ""), 14);
+            h +=
+              '<div class="v2-card" data-i="' +
+              i +
+              '"><div class="pc">' +
+              cardHTML(p) +
+              '</div><div class="dock-label"><span class="dock-name">' +
+              name +
+              "</span></div></div>";
+          }
+          track.innerHTML = h;
+          track.querySelectorAll(".v2-card").forEach(function (c) {
+            c.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var ci = parseInt(c.getAttribute("data-i"));
+              expanded = expanded === ci ? -1 : ci;
+              layout();
+            });
+          });
+        }
+        function layout() {
+          var cards = track.querySelectorAll(".v2-card");
+          cards.forEach(function (c, i) {
+            c.classList.toggle("expanded", expanded === i);
+          });
+        }
+
+        // Click outside to collapse
+        document.addEventListener("pointerdown", function (e) {
+          if (expanded < 0) return;
+          if (scene && !scene.contains(e.target)) {
+            expanded = -1;
+            layout();
+          }
+        });
+
+        render();
+        layout();
+      })();
+
+      /* ===================================================================
+   V3: PYRAMID STACK (infinite auto-rotate)
+   =================================================================== */
+      (function () {
+        var track = document.getElementById("v3-track");
+        var dotsEl = document.getElementById("v3-dots");
+        var prevBtn = document.getElementById("v3-prev");
+        var nextBtn = document.getElementById("v3-next");
+        if (!track) return;
+        var N = PROJECTS.length,
+          cur = 0,
+          timer = null,
+          isPaused = false;
+        var SPREAD = 190,
+          SAG = 25;
+
+        function render() {
+          var h = "";
+          for (var i = 0; i < N; i++)
+            h +=
+              '<div class="v3-card"><div class="pc">' +
+              cardHTML(PROJECTS[i]) +
+              "</div></div>";
+          track.innerHTML = h;
+        }
+        function layout() {
+          var cards = track.querySelectorAll(".v3-card");
+          cards.forEach(function (c, i) {
+            var off = i - cur,
+              abs = Math.abs(off);
+            var pyramidal = N - abs;
+            var x = off * SPREAD;
+            var y = (N - pyramidal) * SAG;
+            var sc = 1 - abs * 0.07;
+            var op = abs > 2 ? 0 : abs === 0 ? 1 : 0.55;
+            var bl = abs === 0 ? "none" : "blur(" + abs * 2.5 + "px)";
+            c.style.transform =
+              "translateX(calc(-50% + " +
+              x +
+              "px)) translateY(" +
+              -y +
+              "px) scale(" +
+              sc +
+              ")";
+            c.style.zIndex = pyramidal;
+            c.style.opacity = op;
+            c.style.filter = bl;
+            c.style.pointerEvents = abs > 2 ? "none" : "auto";
+            c.style.left = "50%";
+          });
+          if (dotsEl) {
+            var ds = dotsEl.querySelectorAll(".v3-dot");
+            for (var j = 0; j < ds.length; j++)
+              ds[j].classList.toggle("active", j === cur);
+          }
+        }
+        function mkDots() {
+          if (!dotsEl) return;
+          dotsEl.innerHTML = "";
+          for (var i = 0; i < N; i++) {
+            var d = document.createElement("button");
+            d.className = "v3-dot" + (i === 0 ? " active" : "");
+            d.setAttribute("aria-label", "Project " + (i + 1));
+            (function (n) {
+              d.addEventListener("click", function () {
+                cur = n;
+                layout();
+                resetAuto();
+              });
+            })(i);
+            dotsEl.appendChild(d);
+          }
+        }
+        function next() {
+          cur = (cur + 1) % N;
+          layout();
+        }
+        function prev() {
+          cur = (cur - 1 + N) % N;
+          layout();
+        }
+        function startAuto() {
+          stopAuto();
+          timer = setInterval(function () {
+            if (!isPaused) next();
+          }, 4000);
+        }
+        function stopAuto() {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+        function resetAuto() {
+          stopAuto();
+          startAuto();
+        }
+        if (prevBtn)
+          prevBtn.addEventListener("click", function () {
+            prev();
+            resetAuto();
+          });
+        if (nextBtn)
+          nextBtn.addEventListener("click", function () {
+            next();
+            resetAuto();
+          });
+        track.addEventListener("mouseenter", function () {
+          isPaused = true;
+          stopAuto();
+        });
+        track.addEventListener("mouseleave", function () {
+          isPaused = false;
+          startAuto();
+        });
+        render();
+        mkDots();
+        layout();
+        startAuto();
+      })();
+
+      /* ===================================================================
+   V4: MASONRY GRID (staggered reveal)
+   =================================================================== */
+      (function () {
+        var grid = document.getElementById("v4-grid");
+        if (!grid) return;
+        var cls = ["", "tall", "wide", "span-2", ""];
+        var h = "";
+        for (var i = 0; i < PROJECTS.length; i++)
+          h +=
+            '<div class="v4-item ' +
+            (cls[i] || "") +
+            '"><div class="pc">' +
+            cardHTML(PROJECTS[i]) +
+            "</div></div>";
+        grid.innerHTML = h;
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.to(grid.querySelectorAll(".v4-item"), {
+          scrollTrigger: {
+            trigger: grid,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          stagger: { each: 0.08, from: "start" },
+          ease: "power2.out",
+        });
+      })();
+
+      /* ===== GLOBAL: Matrix Rain ===== */
+      (function () {
+        var c = document.getElementById("matrix");
+        if (!c) return;
+        var ctx = c.getContext("2d");
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        var chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?~`";
+        var fs = 14,
+          cols = Math.floor(c.width / fs),
+          drops = [];
+        for (var i = 0; i < cols; i++) drops[i] = Math.random() * -100;
+        function draw() {
+          ctx.fillStyle = "rgba(5,10,5,.05)";
+          ctx.fillRect(0, 0, c.width, c.height);
+          ctx.fillStyle = "rgba(0,255,65,.3)";
+          ctx.font = fs + "px monospace";
+          for (var i = 0; i < drops.length; i++) {
+            ctx.fillText(
+              chars[Math.floor(Math.random() * chars.length)],
+              i * fs,
+              drops[i] * fs,
+            );
+            if (drops[i] * fs > c.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+        window.addEventListener("resize", function () {
+          c.width = window.innerWidth;
+          c.height = window.innerHeight;
+          cols = Math.floor(c.width / fs);
+          drops = [];
+          for (var i = 0; i < cols; i++) drops[i] = Math.random() * -100;
+        });
+      })();
+
+      /* ===== GLOBAL: Progress, scroll hint, back-to-top ===== */
+      (function () {
+        var fill = document.getElementById("progress-fill"),
+          hint = document.getElementById("scroll-hint"),
+          btt = document.getElementById("back-to-top");
+        window.addEventListener(
+          "scroll",
+          function () {
+            var s = window.pageYOffset || document.documentElement.scrollTop,
+              mx = document.documentElement.scrollHeight - window.innerHeight;
+            if (fill) fill.style.width = (mx > 0 ? (s / mx) * 100 : 0) + "%";
+            if (hint) hint.classList.toggle("hidden", s > 100);
+            if (btt) btt.classList.toggle("visible", s > 600);
+          },
+          { passive: true },
+        );
+      })();
+
+      /* ===== GLOBAL: Hero boot animation ===== */
+      (function () {
+        gsap.registerPlugin(ScrollTrigger);
+        var lines = [
+          "> Establishing secure connection...",
+          "> Login: aayan_desai@system",
+          "> Password: ********************",
+          "> Access: GRANTED",
+          "> fetch_profile --user aayan_desai",
+        ];
+        var boot = document.querySelector(".terminal-window");
+        if (!boot) return;
+        var bL = boot.querySelectorAll(".boot-line"),
+          hN = document.querySelector(".hero-name"),
+          hR = document.querySelector(".hero-role"),
+          hT = document.querySelector(".hero-tags"),
+          hD = document.querySelector(".hero-download");
+        gsap.set(bL, { opacity: 0, y: 10 });
+        gsap.set([hN, hR, hT, hD], { opacity: 0, y: 20 });
+        var tl = gsap.timeline({ delay: 0.5 });
+        bL.forEach(function (l, i) {
+          var t = lines[i];
+          tl.to(l, { opacity: 1, y: 0, duration: 0.15, ease: "none" }).to(
+            l,
+            {
+              duration: t.includes("GRANTED") ? 0.3 : 0.4 + t.length * 0.02,
+              ease: "none",
+              onStart: function () {
+                if (t.includes("GRANTED"))
+                  l.innerHTML = t.replace(
+                    "GRANTED",
+                    '<span class="granted">GRANTED</span>',
+                  );
+              },
+            },
+            "<",
+          );
+        });
+        tl.to(
+          hN,
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+          "+=.3",
+        )
+          .to(
+            hR,
+            { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+            "-=.2",
+          )
+          .to(
+            hT,
+            { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+            "-=.15",
+          )
+          .to(
+            hD,
+            { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+            "-=.1",
+          );
+      })();
+
+      /* ===== GLOBAL: Section scroll animations ===== */
+      (function () {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll("section:not(#hero)").forEach(function (sec) {
+          var hdr = sec.querySelector(".section-header"),
+            card = sec.querySelector(".cyber-card");
+          if (hdr)
+            gsap.from(hdr, {
+              scrollTrigger: {
+                trigger: hdr,
+                start: "top 88%",
+                toggleActions: "play none none reverse",
+              },
+              opacity: 0,
+              y: 20,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          if (card)
+            gsap.from(card, {
+              scrollTrigger: {
+                trigger: card,
+                start: "top 88%",
+                toggleActions: "play none none reverse",
+              },
+              opacity: 0,
+              y: 20,
+              duration: 0.6,
+              delay: 0.15,
+              ease: "power2.out",
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
